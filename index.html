@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>brainy.io</title>
+  </head>
+
+  <body>
+
+    <h1>brainy.io</h1>
+
+    <p>brainy is a suite of tools for making Backbone smarter between the client and the server. brainy allows you to write an entirely client side application without regard for the server- brainy creates the server for you.
+
+    <h2>your first brainy app</h2>
+
+    <p>although brainy encompasses many tools (<a href="http://github.com/brainyio/brainy-sync">brainy-sync</a>, <a href="http://github.com/brainyio/brainy-api">brainy-api</a>, <a href="http://github.com/brainyio/brainy-boilerplate">brainy-boilerplate</a>), this article focuses on using <a href="http://github.com/brainyio/brainy-server">brainy-server</a> to leverage the power of all the brainy components. this article is verbose for the purpose of clarity, but describes a what is only a 5 minute process to the initiated.</p>
+
+    <p>start by installing the brainy server and creating a new application directory.</p>
+
+    <pre>
+      $ npm install brainy-server -g
+      $ mkdir birdlog
+      $ cd birdlog
+    </pre>
+
+    <p>now, with complete disregard for the lack of files in our application directory, spawn the brainy server.</p>
+
+    <code>
+      $ sudo brainy-server
+    </code>
+
+    <p>navigate to <a href="http://localhost/">http://localhost/</a>. you will see a blank page, with "hello world" printed in the developer console. note that the directory we're running brainy-server in is empty. what is happening here?</p>
+
+    <h3>boilerplate scaffolding</h3>
+
+    <p>by default, the brainy-server will serve two static directories: the <a href="http://github.com/brainyio/brainy-boilerplate">brainy-boilerplate</a>, and the source directory you point it to (process.cwd() by default), in reverse order. this effectively means any file not found in your project directory will attempt to load from the boilerplate. let's take a look at the boilerplate source directory:</p>
+
+    <pre>
+      /src
+      - index.html 
+      - /js
+      - - config.js
+      - - main.js
+      - - /lib
+      - - - backbone.js
+      - - - jquery.js
+      - - - require.js
+      - - - underscore.js
+    </pre>
+
+    <p>naturally, index.html is the entry point to browser based application requests. the default behavior of the boilerplate simply registers the libraries with RequireJS and loads js/main.js, the entry point into your application logic.</p>
+
+    <h3>application logic</h3>
+
+    <p>now that the scaffolding behavior of the boilerplate is clear, the next step is to begin overriding files to create your own application logic. given that the boilerplate considers js/main.js the gateway to application specific javascript, this is a logical starting point. create js/main.js in your project directory, and fill it with some application code.</p>
+
+    <pre>
+      require([
+        'backbone'
+      ], function(Backbone) {
+
+        console.log('birdlog v1', Backbone);
+
+      });
+    </pre>
+
+    <p>restart the brainy server and refresh your browser. the console message should have changed. again, note the lack of files in your project directory. while index.html, js/config.js, and js/lib/backbone.js are being loaded from the boilerplate, js/main.js is being loaded from your project directory.
+
+    <h3>creating resources</h3>
+
+    <p>without models or collections you'll find your application will remain relatively useless. let's start by creating a model and placing it in js/resources/log.js, and loading it from js/main.js. the following example should look familiar: resource definitions and their API remain true to Backbone.</p>
+
+    <pre>
+      define([
+        'backbone'
+      ], function(Backbone) {
+
+        return Backbone.Model.extend({
+          idAttribute: '_id',
+          urlRoot: '/logs',
+          defaults: {
+            text: null
+          }
+        });
+
+      });
+    </pre>
+
+    <pre>
+      require([
+        'resources/log'
+      ], function(Log) {
+
+        var log = new Log();
+
+        log.save({
+          text: 'foo'
+        });
+
+      });
+    </pre>
+
+    <p>restart brainy-server and refresh your browser. while you'll see no more logging in the console, you should see a failing request to POST /logs from the network inspector. we've successfully made an attempt to store some Backbone model with the server, but the server is not yet prepared to handle these types of requests.</p>
+
+    <h3>creating a resource API</h3>
+
+    <p>brainy-server is capable of taking in an arbitrary list of models and collections and creating RESTful endpoints by extrapolating information from their attributes. to let brainy-server create an API for your resources, just pass it the path to the directory containing your resources:
+
+    <pre>
+      $ sudo brainy-server --paths.resources=js/resources
+    </pre>
+
+    <p>again, refresh your browser. you should now notice that the POST to /logs is still being made, as expected, but it is no longer failing. this is because brainy had set up a POST handler on /logs after reading log.js. brainy takes the responsibility of overriding your resources sync functions on the server. this means that while calling model.sync on the client behaves as normal, the same method called on the server will instead persist the data to MongoDB.</p>
+
+    <h2>conclusion</h2>
+
+    <p>the goal of brainy is to let you write a client side application with no regard for the server. in this demonstration, we've successfully created a REST API and the client model with which to access it by just creating 2 files.</p>
+
+  </body>
+
+</html>
