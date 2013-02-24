@@ -8,6 +8,79 @@
 
     <link rel="stylesheet" href="/css/main.css">
 
+    <style type="text/css">
+      body {
+        background: #fefefe;
+        font-family: menlo;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        font-family: monospace, prestige;
+      }
+
+      h2 {
+        margin-top: 100px;
+      }
+
+      h3 {
+        font-size: 20px;
+        margin-top: 50px;
+      }
+
+      h5 {
+        font-size: 16px;
+        margin: 35px 0 0 0;
+      }
+
+      a {
+        color: #5fba3d;
+        text-decoration: underline;
+      }
+
+      pre {
+        background: #efefef;
+        padding: 10px 15px;
+        overflow-x: auto;
+      }
+
+      #sidebar {
+        background: #fefefe;
+        position: fixed;
+        z-index: 10;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding: 30px 0 30px 30px;
+        border-right: 1px solid #bbb;
+        box-shadow: 0 0 20px #ccc; -webkit-box-shadow: 0 0 20px #ccc; -moz-box-shadow: 0 0 20px #ccc;
+      }
+
+        #sidebar h4 {
+          margin-bottom: 5px;
+          margin-top: 20px;
+        }
+
+          #sidebar h4:first-child {
+            margin-top: 0;
+          }
+
+        #sidebar ul {
+          list-style: none;
+          padding: 0 0 0 10px;
+          margin: 0;
+        }
+
+      #content {
+        position: relative;
+        width: 550px;
+        margin: 30px 0 30px 260px;
+      }
+    </style>
+
   </head>
 
   <body>
@@ -70,7 +143,7 @@ var Post = Backbone.Model.extend({
   urlRoot: '/posts'
 });</pre>
 
-      <p><strong>POST /:urlRoot</strong></p>
+      <h5>POST /:urlRoot</h5>
 
       <p>creates and returns a new model, or 400 if the model is invalid. model attributes should be passed in through the request body.</p>
 
@@ -82,7 +155,7 @@ $ curl -X POST -d 'text=foo&amp;username=catshirt' /posts
     "_id": "512a40f1163dcb4bce000001"
   }</pre>
 
-      <p><strong>GET /:urlRoot/:id</strong></p>
+      <h5>GET /:urlRoot/:id</h5>
 
       <p>returns a single model, or 404 if not found. additional parameters passed through in the querystring are interpreted as a mongodb query. if a query is used, the model will only be returned if it matches that query.</p>
 
@@ -94,7 +167,7 @@ $ curl -X GET /posts/512a40f1163dcb4bce000001
     "_id": "512a40f1163dcb4bce000001"
   }</pre>
 
-      <p><strong>PUT /:urlRoot/:id</strong></p>
+      <h5>PUT /:urlRoot/:id</h5>
 
       <p>updates and returns the updated model, or 400 if the model is invalid. differs from PATCH in that PUT requires all attributes of the model to be sent. model attributes should be passed in through the request body.</p>
 
@@ -106,7 +179,7 @@ $ curl -X PUT -d 'text=putted&amp;username=catshirt' /posts/512a40f1163dcb4bce00
     "_id": "512a40f1163dcb4bce000001"
   }</pre>
 
-      <p><strong>PATCH /:urlRoot/:id</strong></p>
+      <h5>PATCH /:urlRoot/:id</h5>
 
       <p>updates and returns the updated model, or 400 if the model is invalid. differs from PUT in that PATCH can accept a subset of attributes. model attributes should be passed in through the request body.</p>
 
@@ -118,7 +191,7 @@ $ curl -X PUT -d 'text=patched' /posts/512a40f1163dcb4bce000001
     "_id": "512a40f1163dcb4bce000001"
   }</pre>
 
-      <p><strong>DELETE /:urlRoot/:id</strong></p>
+      <h5>DELETE /:urlRoot/:id</h5>
 
       <pre>
 $ curl -X DELETE /posts/512a40f1163dcb4bce000001
@@ -136,7 +209,7 @@ var Posts = Backbone.Collection.extend({
   model: Post
 });</pre>
 
-      <p><strong>GET /:url</strong></p>
+      <h5>GET /:url</h5>
 
       <p>returns the entire collection of models, or [] if empty. additional parameters passed in the querystring are interpreted as a mongodb query. if a query is used, the collection will only return models that satisfy the query.</p>
 

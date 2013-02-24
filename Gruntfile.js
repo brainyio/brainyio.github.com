@@ -11,8 +11,7 @@ module.exports = function(grunt) {
     watch: {
       livereload: {
         files: [
-          '*.html',
-          'css/*.css'
+          '*.html'
         ],
         tasks: ['livereload']
       }
@@ -37,21 +36,7 @@ module.exports = function(grunt) {
     var fs = require('fs'),
       express = require('express'),
       app = express(),
-      root = grunt.config.get('express.options.root') || '.',
-      directories = ['img', 'js', 'css'];
-
-    for (var i = 0; i < directories.length; i++) {
-      (function(key) {
-        app.get('/' + [key, '*?'].join('/'), function(req, res, next) {
-          var path = req.url.split('?')[0];
-          res.sendfile(root + path, {}, function(err) {
-            if (err) {
-              res.send(404);
-            }
-          });
-        });
-      })(directories[i]);
-    }
+      root = grunt.config.get('express.options.root') || '.';
 
     app.get(/(.+)?/, function(req, res) {
       var index = fs.readFileSync([root, 'index.html'].join('/'), 'utf8');
