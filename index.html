@@ -74,7 +74,11 @@
 
       <p><strong>PUT /:urlRoot/:id</strong></p>
 
-      <p>updates and returns the updated model, or 400 if the model is invalid. model attributes should be passed in through the request body.</p>
+      <p>updates and returns the updated model, or 400 if the model is invalid. differs from PATCH in that PUT requires all attributes of the model to be sent. model attributes should be passed in through the request body.</p>
+
+      <p><strong>PATCH /:urlRoot/:id</strong></p>
+
+      <p>updates and returns the updated model, or 400 if the model is invalid. differs from PUT in that PATCH can accept a subset of attributes. model attributes should be passed in through the request body.</p>
 
       <p><strong>DELETE /:urlRoot/:id</strong></p>
 
