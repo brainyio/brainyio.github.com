@@ -62,35 +62,95 @@
 
       <h3 id="api-models">models</h3>
 
-      <p>when given a model, brainy will create the following HTTP endpoints for creating, reading, updating, and deleting models.</p>
+      <p>when given a model, brainy will create the following HTTP endpoints for creating, reading, updating, and deleting models. we will use the following model definition for endpoint examples.</p>
+
+      <pre>
+var Post = Backbone.Model.extend({
+  idAttribute: '_id',
+  urlRoot: '/posts'
+});</pre>
 
       <p><strong>POST /:urlRoot</strong></p>
 
       <p>creates and returns a new model, or 400 if the model is invalid. model attributes should be passed in through the request body.</p>
 
+      <pre>
+$ curl -X POST -d 'text=foo&amp;username=catshirt' /posts
+  {
+    "text": "foo",
+    "username": "catshirt",
+    "_id": "512a40f1163dcb4bce000001"
+  }</pre>
+
       <p><strong>GET /:urlRoot/:id</strong></p>
 
       <p>returns a single model, or 404 if not found. additional parameters passed through in the querystring are interpreted as a mongodb query. if a query is used, the model will only be returned if it matches that query.</p>
+
+      <pre>
+$ curl -X GET /posts/512a40f1163dcb4bce000001
+  {
+    "text": "foo",
+    "username": "catshirt",
+    "_id": "512a40f1163dcb4bce000001"
+  }</pre>
 
       <p><strong>PUT /:urlRoot/:id</strong></p>
 
       <p>updates and returns the updated model, or 400 if the model is invalid. differs from PATCH in that PUT requires all attributes of the model to be sent. model attributes should be passed in through the request body.</p>
 
+      <pre>
+$ curl -X PUT -d 'text=putted&amp;username=catshirt' /posts/512a40f1163dcb4bce000001
+  {
+    "text": "putted",
+    "username": "catshirt",
+    "_id": "512a40f1163dcb4bce000001"
+  }</pre>
+
       <p><strong>PATCH /:urlRoot/:id</strong></p>
 
       <p>updates and returns the updated model, or 400 if the model is invalid. differs from PUT in that PATCH can accept a subset of attributes. model attributes should be passed in through the request body.</p>
 
+      <pre>
+$ curl -X PUT -d 'text=patched' /posts/512a40f1163dcb4bce000001
+  {
+    "text": "patched",
+    "username": "catshirt",
+    "_id": "512a40f1163dcb4bce000001"
+  }</pre>
+
       <p><strong>DELETE /:urlRoot/:id</strong></p>
+
+      <pre>
+$ curl -X DELETE /posts/512a40f1163dcb4bce000001
+  OK</pre>
 
       <p>deletes a model and returns 200, or 404 if the model is not found.</p>
 
       <h3 id="api-collections">collections</h3>
 
-      <p>when given a collection, brainy will create an HTTP endpoint for reading and querying models as a collection.</p>
+      <p>when given a collection, brainy will create an HTTP endpoint for reading and querying models as a collection. we will use the following collection definition for endpoint examples.</p>
+
+      <pre>
+var Posts = Backbone.Collection.extend({
+  url: '/posts',
+  model: Post
+});</pre>
 
       <p><strong>GET /:url</strong></p>
 
       <p>returns the entire collection of models, or [] if empty. additional parameters passed in the querystring are interpreted as a mongodb query. if a query is used, the collection will only return models that satisfy the query.</p>
+
+      <pre>
+$ curl -X GET /posts
+  [{
+    "text": "foo",
+    "username": "catshirt",
+    "_id": "512a40f1163dcb4bce000001"
+  }]</pre>
+
+      <pre>
+$ curl -X GET /posts?text[$regex]=boo
+  []</pre>
 
       <h2 id="resources">resources</h2>
 
@@ -101,65 +161,60 @@
       <p>because brainy's primary data store is mongodb, you should assign <em>_id</em> to your model's idAttribute.</p>
 
       <pre>
-        var Post = Backbone.Model.extend({
-          idAttribute: '_id'
-        });
-      </pre>
+var Post = Backbone.Model.extend({
+  idAttribute: '_id'
+});</pre>
 
       <h3 id="resources-urlRoot">urlRoot</h3>
 
       <p>similar to a collection's url, urlRoot is required for all models. urlRoot is used to infer a mongodb collection name and expose HTTP endpoints.</p>
 
       <pre>
-        var Post = Backbone.Model.extend({
-          idAttribute: '_id',
-          urlRoot: '/posts'
-        });
-      </pre>
+var Post = Backbone.Model.extend({
+  idAttribute: '_id',
+  urlRoot: '/posts'
+});</pre>
 
       <h3 id="resources-url">url</h3>
 
       <p>per usual Backbone practice, collections all require a url property or function. brainy relies on this well for two purposes: inferring a mongodb collection name, and exposing HTTP endpoints.</p>
 
       <pre>
-        var PostsCollection = Backbone.Collection.extend({
-          urlRoot: '/posts',
-          model: Post
-        });
-      </pre>
+var PostsCollection = Backbone.Collection.extend({
+  urlRoot: '/posts',
+  model: Post
+});</pre>
 
       <h3 id="resources-fetch">fetch</h3>
 
       <p>resource fetch() functions behave as you'd expect them to in Backbone, but the nature of the HTTP api audments this function with an additional querying feature. by nature of jQuery's ajax method, the `data` value of `options` is serialized as a query string. the brainy api uses this query string to execute mongodb queries, meaning you can search collections through fetch:</p>
 
       <pre>
-        var posts = new PostsCollection;
-        posts.fetch({
-          data: {
-            text: {
-              $regex: 'foo'
-            }
-          }
-        });
-      </pre>
+var posts = new PostsCollection;
+posts.fetch({
+  data: {
+    text: {
+      $regex: 'boo'
+    }
+  }
+});</pre>
 
       <h3 id="resources-validate">validate</h3>
 
       <p>validate, like all resource functions, runs on both the client and the server. if a model invalidates on the client, the request is not sent. if the request is sent, validate is run again by the server. this means your api can validate requests sent from any client.</p>
 
       <pre>
-        var Post = Backbone.Model.extend({
-          idAttribute: '_id',
-          urlRoot: '/posts',
-          validate: function(attrs) {
-            var err = undefined;
-            if (!attrs.text) {
-              err = 'text cannot be empty';
-            }
-            return err;
-          }
-        });
-      </pre>
+var Post = Backbone.Model.extend({
+  idAttribute: '_id',
+  urlRoot: '/posts',
+  validate: function(attrs) {
+    var err = undefined;
+    if (!attrs.text) {
+      err = 'text cannot be empty';
+    }
+    return err;
+  }
+});</pre>
 
       <p>in the example above, validate behaves as expected on the client, triggering the 'invalid' event on the model. validate on the server however, instead returns a 400 response code with the invalidation error in the response body.</p>
 

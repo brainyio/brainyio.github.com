@@ -20,6 +20,12 @@ a {
   text-decoration: underline;
 }
 
+pre {
+  background: #efefef;
+  padding: 10px 15px;
+  overflow-x: auto;
+}
+
 #sidebar {
   background: #fefefe;
   position: fixed;
