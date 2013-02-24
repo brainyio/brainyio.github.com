@@ -1,0 +1,20 @@
+{
+  "name": "brainyio.github.com",
+  "author": "catshirt <caden@catshirt.net>",
+  "description": "the brainyio organization website",
+  "keywords": ["branyio", "website"],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/branyio/branyio.github.com"
+  },
+  "dependencies": {
+    "grunt": "0.4.0rc7",
+    "grunt-contrib-livereload": "0.1.0rc8",
+    "grunt-open": "~0.1.0",
+    "grunt-regarde": "~0.1.1"
+  },
+  "engines": {
+    "node": ">=0.8.12"
+  },
+  "version": "0.0.1"
+}
